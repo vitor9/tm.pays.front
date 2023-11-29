@@ -15,37 +15,46 @@
         <label for="dataTransferencia">Data da Transferência:</label>
         <input type="date" v-model="dataTransferencia" required />
   
-        <button type="submit">Realizar Transferência</button>
+        <button @click="criarNovaTransferencia" type="submit">Realizar Transferência</button>
       </form>
     </div>
   </template>
   
   <script>
-  export default {
-    name: 'TransferenciaFinanceira',
-    data() {
-      return {
-        contaOrigem: 'XXXXXXXXXX',
-        contaDestino: 'XXXXXXXXXX',
-        valorTransferencia: null,
-        dataTransferencia: null,
-      };
-    },
-    methods: {
-      realizarTransferencia() {
-        // Lógica para enviar os dados para o backend ou realizar outras ações necessárias
-        console.log('Conta de Origem:', this.contaOrigem);
-        console.log('Conta de Destino:', this.contaDestino);
-        console.log('Valor da Transferência:', this.valorTransferencia);
-        console.log('Data da Transferência:', this.dataTransferencia);
-  
-        // Adicione aqui a lógica para enviar os dados para o backend
+import api from '@/services/api';
+
+export default {
+  data() {
+    return {
+      transferencias: [],
+      novaTransferencia: {
       },
+    };
+  },
+  methods: {
+    async carregarTransferencias() {
+      try {
+        const response = await api.getTransferencias();
+        this.transferencias = response.data;
+      } catch (error) {
+        console.error('Erro ao carregar transferências:', error);
+      }
     },
-  };
+    async criarNovaTransferencia() {
+      try {
+        await api.criarTransferencia(this.novaTransferencia);
+        this.carregarTransferencias();
+      } catch (error) {
+        console.error('Erro ao criar nova transferência:', error);
+      }
+    },
+  },
+  created() {
+    this.carregarTransferencias();
+  },
+};
   </script>
   
   <style scoped>
-  /* Adicione estilos CSS conforme necessário */
   </style>
   
